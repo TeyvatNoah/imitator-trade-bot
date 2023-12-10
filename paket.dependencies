@@ -1,4 +1,5 @@
 source https://api.nuget.org/v3/index.json
 
 storage: none
+nuget Dapper.AOT
 nuget System.CommandLine 2.0.0-beta4.22272.1 beta4
