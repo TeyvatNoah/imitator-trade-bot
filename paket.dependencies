@@ -1,5 +1,8 @@
-source https://api.nuget.org/v3/index.json
+source https://nuget.cdn.azure.cn/v3/index.json
 
 storage: none
 nuget Dapper.AOT
+nuget Microsoft.Extensions.Hosting 8.0.0
+nuget RestEase
+nuget Riok.Mapperly
 nuget System.CommandLine 2.0.0-beta4.22272.1 beta4

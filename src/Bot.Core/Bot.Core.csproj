@@ -85,6 +85,7 @@
     <PublishAot>true</PublishAot>
     <OptimizationPreference>speed</OptimizationPreference>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+		<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
     <!-- <IsAotCompatible>true</IsAotCompatible> -->
     <!-- JIT & PGO -->
     <!-- <TieredPGO>true</TieredPGO>

@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/src/Bot.OKEXApi/Bot.OKEXApi.csproj",
+				"-c",
+				"Debug",
+				"-p:Arch=x64",
+				"-p:RID=win-x64"
+			],
+			"problemMatcher": "$msCompile"
+		},
+	]
+}

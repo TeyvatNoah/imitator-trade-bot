@@ -18,7 +18,8 @@
     <!-- output target -->
     <TargetFramework>net8.0</TargetFramework>
     <!-- <TargetFrameworks>net8.0;netstandard2.1;</TargetFrameworks> -->
-    <OutputType>Library</OutputType>
+    <!-- <OutputType>Library</OutputType> -->
+    <OutputType>Exe</OutputType>
     <!-- 输出exe文件名 -->
     <!-- <AssemblyName>$(Exefile)</AssemblyName> -->
     <!-- 输出目录 -->
@@ -89,6 +90,7 @@
     <!-- <PublishAot>true</PublishAot>
 		<OptimizationPreference>speed</OptimizationPreference>
 		<EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator> -->
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
     <!-- <IsAotCompatible>true</IsAotCompatible> -->
     <!-- JIT & PGO -->
     <!-- <TieredPGO>true</TieredPGO>
