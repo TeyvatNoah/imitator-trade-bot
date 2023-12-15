@@ -112,6 +112,6 @@ public sealed class OEKXOrderDto {
 	public string? OrderCreatedTime { get; set; }
 }
 
- 
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
 [JsonSerializable(typeof(OEKXOrderDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class OKEXOrderDtoContext: JsonSerializerContext {}

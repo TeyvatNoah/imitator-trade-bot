@@ -57,6 +57,41 @@ public enum OKEXOrderKeys {
 	algoId,
 	uTime,
 	cTime,
+	posId,
+	mgnMode,
+	pos,
+	availPos,
+	upl,
+	uplRatio,
+	uplLastPx,
+	uplRatioLastPx,
+	liqPx,
+	markPx,
+	imr,
+	margin,
+	mgnRatio,
+	mmr,
+	interest,
+	notionalUsd,
+	adl,
+	last,
+	idxPx,
+	usdPx,
+	bePx,
+	spotInUseAmt,
+	spotInUseCcy,
+	realizedPnl,
+	fundingFee,
+	liqPenalty,
+	closeOrderAlgo,
+	openAvgPx,
+	closeAvgPx,
+	openMaxPos,
+	closeTotalPos,
+	direction,
+	triggerPx,
+	uly,
+	pnlRatio,
 }
 
 
@@ -81,4 +116,49 @@ public sealed class OKEXOrderType {
 	// 期权
 	public const string OPTION = "OPTION";
 	
+}
+
+
+public enum OKEXErrorCode {
+	// 操作全部失败
+	AllOperationFailed = 1,
+	// 超出调用频率限制
+	RateLimit = 50111,
+	// 服务挂了
+	RemoteDown = 50001,
+	// 请求参数的json错误
+	InvalidJSONArgument = 50002,
+	// 非application/json的MIME Type错误
+	MIMETypeError = 50006,
+	// 用户处于爆仓冻结
+	Liquidation = 50009,
+	// 系统繁忙
+	SystemBusy = 50013,
+	// 必填参数为空错误
+	RequiredArguments = 50014,
+	// 参数冲突错误
+	ConflictArguments = 50024,
+	// 系统错误
+	SystemError = 50026,
+	// 操作频繁请重试
+	TooManyOperation = 50040,
+	// ordId或clOrdId至少填一个
+	OidOrCOid = 51003,
+	// 下单失败
+	OrderFailed = 51004,
+	// 委托失败, 委托数量不能小于1
+	SizeError = 51007,
+	// 委托失败
+	ConsignFailed = 51008,
+	// 委托数量必须超过单笔下限
+	MinimumSizeError = 51020,
+}
+
+public enum SystemStatusKeys {
+	title,
+	state,
+	begin,
+	end,
+	maintType,
+	href,
 }

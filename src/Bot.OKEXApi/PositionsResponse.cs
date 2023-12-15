@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bot.OKEXApi;
 
-public sealed class OKEXOrderListResponse: IOKEXResponse<OEKXOrderDto[]> {
+public sealed class PositionsResponse: IOKEXResponse<PositionsDto[]> {
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.code))]
 	public int Code { get; set; }
@@ -11,9 +11,9 @@ public sealed class OKEXOrderListResponse: IOKEXResponse<OEKXOrderDto[]> {
 	public string Message { get; set; } = "";
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.data))]
-	public OEKXOrderDto[] Data { get; set; } = [];
+	public PositionsDto[] Data { get; set; } = default!;
 }
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
-[JsonSerializable(typeof(OKEXOrderListResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
-public partial class OKEXOrderListResponseContext: JsonSerializerContext {}
+[JsonSerializable(typeof(PositionsResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class PositionResponseContext: JsonSerializerContext {}
