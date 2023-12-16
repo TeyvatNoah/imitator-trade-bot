@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bot.OKEXApi;
 
-public sealed class SystemStatusResponse: IOKEXResponse<SystemStatusDto[]> {
+public sealed class AccountConfigurationResponse: IOKEXResponse<AccountConfigurationDto[]> {
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.code))]
 	public int Code { get; set; }
@@ -11,9 +11,9 @@ public sealed class SystemStatusResponse: IOKEXResponse<SystemStatusDto[]> {
 	public string Message { get; set; } = "";
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.data))]
-	public SystemStatusDto[] Data { get; set; } = default!;
+	public AccountConfigurationDto[] Data { get; set; } = default!;
 }
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
-[JsonSerializable(typeof(SystemStatusResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
-public partial class SystemStatusResponseContext: JsonSerializerContext {}
+[JsonSerializable(typeof(AccountConfigurationResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class AccountConfigurationResponseContext: JsonSerializerContext {}

@@ -142,4 +142,4 @@ public sealed class PositionsDto {
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
 [JsonSerializable(typeof(PositionsDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
-public partial class PositionDtoContext: JsonSerializerContext {}
+public partial class PositionContext: JsonSerializerContext {}

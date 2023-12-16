@@ -114,4 +114,4 @@ public sealed class OEKXOrderDto {
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
 [JsonSerializable(typeof(OEKXOrderDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
-public partial class OKEXOrderDtoContext: JsonSerializerContext {}
+public partial class OKEXOrderContext: JsonSerializerContext {}

@@ -91,4 +91,4 @@ public sealed class HistoryPositionsDto {
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
 [JsonSerializable(typeof(HistoryPositionsDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
-public partial class HistoryPositionDtoContext: JsonSerializerContext {}
+public partial class HistoryPositionContext: JsonSerializerContext {}

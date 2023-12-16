@@ -92,6 +92,36 @@ public enum OKEXOrderKeys {
 	triggerPx,
 	uly,
 	pnlRatio,
+	details,
+	totalEq,
+	isoEq,
+	adjEq,
+	ordFroz
+
+}
+
+
+public enum OKEXAccountConfigurationKeys {
+	uid,
+	mainUid,
+	acctLv,
+	posMode,
+	autoLoan,
+	greeksType,
+	level,
+	levelTmp,
+	ctIsoMode,
+	mgnIsoMode,
+	spotOffsetType,
+	roleType,
+	traderInsts,
+	spotRoleType,
+	spotTraderInsts,
+	opAuth,
+	kycLv,
+	label,
+	ip,
+	perm,
 }
 
 
