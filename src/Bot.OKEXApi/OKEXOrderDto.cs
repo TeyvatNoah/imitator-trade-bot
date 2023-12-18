@@ -77,7 +77,7 @@ public sealed class OEKXOrderDto {
 
 	// 杠杆倍数
 	[JsonPropertyName(nameof(OKEXOrderKeys.lever))]
-	public string? Lever { get; set; }
+	public string? Leverage { get; set; }
 
 	// 手续费币种
 	[JsonPropertyName(nameof(OKEXOrderKeys.feeCcy))]
@@ -112,6 +112,6 @@ public sealed class OEKXOrderDto {
 	public string? OrderCreatedTime { get; set; }
 }
 
-[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(OEKXOrderDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class OKEXOrderContext: JsonSerializerContext {}

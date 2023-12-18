@@ -36,6 +36,7 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			req.Headers.Add("OK-ACCESS-PASSPHRASE", passphrase);
 		},
 		AfterResponseDeserializeSyncHookNoReturn = (content, req, res, cancellationToken) => {
+			// TODO 如果接口是起始配置接口则需要抛出异常
 			Console.WriteLine((content as IOKEXResponse)?.Code);
 		}
 	};
@@ -66,10 +67,10 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		}
 		
 		var reqMsg = new RequestMessage() {
-			Query = new Dictionary<string, string> {
+			Query = new(new Dictionary<string, string> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
 				{ nameof(OKEXOrderKeys.state), orderState },
-			}
+			})
 		};
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
@@ -104,9 +105,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		}
 		
 		var reqMsg = new RequestMessage() {
-			Query = new Dictionary<string, string> {
+			Query = new(new Dictionary<string, string> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
-			}
+			})
 		};
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, PositionResponseContext.Default.PositionsResponse, cancellationToken);
@@ -124,10 +125,10 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		}
 		
 		var reqMsg = new RequestMessage() {
-			Query = new Dictionary<string, string> {
+			Query = new(new Dictionary<string, string> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
 				{ nameof(OKEXOrderKeys.state), MgnMode },
-			}
+			})
 		};
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, HistoryPositionResponseContext.Default.HistoryPositionsResponse, cancellationToken);
@@ -145,9 +146,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		}
 		
 		var reqMsg = new RequestMessage() {
-			Query = new Dictionary<string, string> {
+			Query = new(new Dictionary<string, string> {
 				{ nameof(OKEXOrderKeys.ccy), currency },
-			}
+			})
 		};
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, BalanceResponseContext.Default.BalanceResponse, cancellationToken);
@@ -169,7 +170,7 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, AccountConfigurationResponseContext.Default.AccountConfigurationResponse, cancellationToken);
 	}
 	// 设置持仓模式
-	public async Task<PositionModeResponse?> SetPositionMode(PositionMode positionMode, CancellationToken cancellationToken) {
+	public async Task<DontCareAboutBodyResponse?> SetAccountPositionMode(AccountPositionModeDto positionMode, CancellationToken cancellationToken) {
 		var path = "/api/v5/account/set-position-mode";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
@@ -179,75 +180,72 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			return default;
 		}
 		
-		var reqMsg = new RequestMessage<PositionMode>() {
+		var reqMsg = new RequestMessage<AccountPositionModeDto>() {
 			Content = positionMode
 		};
 		
-		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, PositionModeContext.Default.PositionMode, PositionModeResponseContext.Default.PositionModeResponse, cancellationToken);
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, AccountPositionModeContext.Default.AccountPositionModeDto, DontCareAboutBodyResponseContext.Default.DontCareAboutBodyResponse, cancellationToken);
+	}
+	// 设置杠杆倍数
+	public async Task<DontCareAboutBodyResponse?> SetAccountLeverage(AccountLeverageDto leverage, CancellationToken cancellationToken) {
+		var path = "/api/v5/account/set-leverage";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
+		
+		var reqMsg = new RequestMessage<AccountLeverageDto>() {
+			Content = leverage
+		};
+		
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, AccountLeverageContext.Default.AccountLeverageDto, DontCareAboutBodyResponseContext.Default.DontCareAboutBodyResponse, cancellationToken);
+	}
+
+	// 获取最大可开仓数量
+	public async Task<AccountMaxSizeResponse?> GetAccountMaxSize(string productID, string tradeMode, double price, CancellationToken cancellationToken) {
+		var path = "/api/v5/account/max-size";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
+		
+		var reqMsg = new RequestMessage() {
+			Query = new()
+		};
+		reqMsg.Query
+			.Add(nameof(OKEXOrderKeys.instId), productID)
+			.Add(nameof(OKEXOrderKeys.tdMode), tradeMode)
+			.Add(nameof(OKEXOrderKeys.px), price);
+		
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, AccountMaxSizeResponseContext.Default.AccountMaxSizeResponse, cancellationToken);
 	}
 	// // TODO
-	// // 设置杠杆倍数
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/set-leverage";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
-
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
-		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 获取最大可开仓数量
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/max-size";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
-
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
-		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
 	// // 获取最大可用数量
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/max-avail-size";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	public async Task<AccountAvailableMaxSizeResponse?> GetAccountMaxAvailableSize(string productID, string tradeMode, CancellationToken cancellationToken) {
+		var path = "/api/v5/account/max-avail-size";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage() {
+			Query = new()
+		};
+		reqMsg.Query
+			.Add(nameof(OKEXOrderKeys.instId), productID)
+			.Add(nameof(OKEXOrderKeys.tdMode), tradeMode);
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, AccountAvailableMaxSizeResponseContext.Default.AccountAvailableMaxSizeResponse, cancellationToken);
+	}
 	// // TODO
 	// // 调整保证金
 	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {

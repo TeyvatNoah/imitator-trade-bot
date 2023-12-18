@@ -25,6 +25,6 @@ public sealed class SystemStatusDto {
 
 }
 
-[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(SystemStatusDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class SystemStatusContext: JsonSerializerContext {}

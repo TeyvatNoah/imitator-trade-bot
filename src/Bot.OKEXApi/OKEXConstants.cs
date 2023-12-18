@@ -113,6 +113,7 @@ public enum OKEXAccountConfigurationKeys {
 	ctIsoMode,
 	mgnIsoMode,
 	spotOffsetType,
+	upSpotOffset,
 	roleType,
 	traderInsts,
 	spotRoleType,
@@ -122,6 +123,10 @@ public enum OKEXAccountConfigurationKeys {
 	label,
 	ip,
 	perm,
+	maxBuy,
+	maxSell,
+	availBuy,
+	availSell,
 }
 
 

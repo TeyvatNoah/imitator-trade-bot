@@ -13,7 +13,7 @@ public sealed class HistoryPositionsDto {
 
 	// 保证金模式
 	[JsonPropertyName(nameof(OKEXOrderKeys.mgnMode))]
-	public string? MgnMode { get; set; }
+	public string? TradeMode { get; set; }
 
 	// 仓位状态更新时间
 	[JsonPropertyName(nameof(OKEXOrderKeys.uTime))]
@@ -49,7 +49,7 @@ public sealed class HistoryPositionsDto {
 
 	// 杠杆倍数
 	[JsonPropertyName(nameof(OKEXOrderKeys.lever))]
-	public string? Lever { get; set; }
+	public string? Leverage { get; set; }
 
 	// 持仓方向
 	[JsonPropertyName(nameof(OKEXOrderKeys.direction))]
@@ -89,6 +89,6 @@ public sealed class HistoryPositionsDto {
 
 }
 
-[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(HistoryPositionsDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class HistoryPositionContext: JsonSerializerContext {}

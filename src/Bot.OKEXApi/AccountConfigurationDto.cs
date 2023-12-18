@@ -81,6 +81,6 @@ public sealed class AccountConfigurationDto {
 
 }
 
-[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(AccountConfigurationDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class AccountConfigurationContext: JsonSerializerContext {}

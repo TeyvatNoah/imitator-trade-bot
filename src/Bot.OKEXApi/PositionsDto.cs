@@ -9,7 +9,7 @@ public sealed class PositionsDto {
 
 	// 保证金模式
 	[JsonPropertyName(nameof(OKEXOrderKeys.mgnMode))]
-	public string? MgnMode { get; set; }
+	public string? TradeMode { get; set; }
 
 	// 持仓ID
 	[JsonPropertyName(nameof(OKEXOrderKeys.posId))]
@@ -41,7 +41,7 @@ public sealed class PositionsDto {
 	
 	// 杠杆倍数
 	[JsonPropertyName(nameof(OKEXOrderKeys.lever))]
-	public string? Lever { get; set; }
+	public string? Leverage { get; set; }
 
 	// 产品ID, eg. 合约ID BTC-USD-200329
 	[JsonPropertyName(nameof(OKEXOrderKeys.instId))]
@@ -140,6 +140,6 @@ public sealed class PositionsDto {
 
 }
 
-[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(PositionsDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class PositionContext: JsonSerializerContext {}

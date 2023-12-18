@@ -1,8 +1,6 @@
-using System.Data;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
@@ -47,7 +45,8 @@ public sealed class Request {
 		if (msg.Query is not null) {
 			// 考虑StringBuilder?
 			// 不支持重复key
-			tempUri.Query = string.Join("&", msg.Query.Select(kv => $"{UrlEncoder.Default.Encode(kv.Key)}={UrlEncoder.Default.Encode(kv.Value)}"));
+			// tempUri.Query = string.Join("&", msg.Query.Select(kv => $"{UrlEncoder.Default.Encode(kv.Key)}={UrlEncoder.Default.Encode(kv.Value)}"));
+			tempUri.Query = msg.Query.ToString();
 		}
 
 		using var req = new HttpRequestMessage(method, tempUri.Uri);
@@ -70,8 +69,23 @@ public sealed class Request {
 			newReq = await BeforeSendSerializeAsyncHookReturn(req, cancelToken);
 		}
 		
-		// var nnewReq = newReq ?? req;
 
+		var nnewReq = newReq ?? req;
+
+		// 这里要么不带body要么不需要序列化但是为了保证一致所以还是执行此hook了
+		// 首先multipart和steram不需要管序列化排除掉,至于ByteArrayContent,这里也没办法序列化
+		if (AfterSendDeserializeSyncHookNoReturn is not null) {
+			AfterSendDeserializeSyncHookNoReturn("", nnewReq, cancelToken);
+		}
+		if (AfterSendDeserializeAsyncHookNoReturn is not null) {
+			await AfterSendDeserializeAsyncHookNoReturn("", nnewReq, cancelToken);
+		}
+		if (AfterSendDeserializeSyncHookReturn is not null) {
+			nnewReq = AfterSendDeserializeSyncHookReturn("", nnewReq, cancelToken);
+		}
+		if (AfterSendDeserializeSyncHookReturn is not null) {
+			nnewReq = AfterSendDeserializeSyncHookReturn("", nnewReq, cancelToken);
+		}
 
 		
 		// 这里要么不带body要么不需要序列化所以不执行此hook了
@@ -95,7 +109,7 @@ public sealed class Request {
 		
 		HttpResponseMessage? newResp = null;
 		try {
-			using var resp = await _client.SendAsync(req, cancelToken);
+			using var resp = await _client.SendAsync(nnewReq, cancelToken);
 
 			newResp = resp;
 			
@@ -159,7 +173,8 @@ public sealed class Request {
 		if (msg.Query is not null) {
 			// 考虑StringBuilder?
 			// 不支持重复key
-			tempUri.Query = string.Join("&", msg.Query.Select(kv => $"{UrlEncoder.Default.Encode(kv.Key)}={UrlEncoder.Default.Encode(kv.Value)}"));
+			// tempUri.Query = string.Join("&", msg.Query.Select(kv => $"{UrlEncoder.Default.Encode(kv.Key)}={UrlEncoder.Default.Encode(kv.Value)}"));
+			tempUri.Query = msg.Query.ToString();
 		}
 
 		using var req = new HttpRequestMessage(method, tempUri.Uri);
@@ -196,9 +211,7 @@ public sealed class Request {
 			
 			var contentStr = Encoding.UTF8.GetString(content);
 
-			// 首先multipart和steram不需要管序列化排除掉
 			if (AfterSendDeserializeSyncHookNoReturn is not null) {
-				// TODO 安全吗? 讲道理到这里content肯定是有的, 至于Value是Object是不是string需要确认
 				AfterSendDeserializeSyncHookNoReturn(contentStr, nnewReq, cancelToken);
 			}
 			if (AfterSendDeserializeAsyncHookNoReturn is not null) {
@@ -274,12 +287,14 @@ public sealed class Request {
 public sealed class RequestMessage<T> {
 	public HttpHeaders? Headers { get; init; }
 	public T? Content { get; init; }
-	public ICollection<KeyValuePair<string, string>>? Query { get; init; }
+	// public ICollection<KeyValuePair<string, string>>? Query { get; init; }
+	public QueryString? Query { get; init; }
 }
 
 public sealed class RequestMessage {
 	public HttpHeaders? Headers { get; init; }
-	public ICollection<KeyValuePair<string, string>>? Query { get; init; }
+	// public ICollection<KeyValuePair<string, string>>? Query { get; init; }
+	public QueryString? Query { get; init; }
 }
 
 

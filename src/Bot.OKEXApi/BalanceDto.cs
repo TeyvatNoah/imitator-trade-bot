@@ -29,6 +29,6 @@ public sealed class BalanceDto {
 
 }
 
-[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)] 
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(BalanceDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class BalanceContext: JsonSerializerContext {}
