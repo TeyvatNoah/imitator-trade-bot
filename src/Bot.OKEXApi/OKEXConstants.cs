@@ -127,6 +127,10 @@ public enum OKEXAccountConfigurationKeys {
 	maxSell,
 	availBuy,
 	availSell,
+	type,
+	amt,
+	auto,
+	isoMode,
 }
 
 

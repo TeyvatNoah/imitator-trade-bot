@@ -246,92 +246,64 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, AccountAvailableMaxSizeResponseContext.Default.AccountAvailableMaxSizeResponse, cancellationToken);
 	}
-	// // TODO
-	// // 调整保证金
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/position/margin-balance";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	// 调整保证金
+	public async Task<MarginBalanceResponse?> SetMarginBalance(MarginBalanceArgDto marginBalance, CancellationToken cancellationToken) {
+		var path = "/api/v5/account/position/margin-balance";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
+		var reqMsg = new RequestMessage<MarginBalanceArgDto>() {
+			Content = marginBalance
+		};
 
-	// // TODO
-	// // 获取杠杆倍数
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/leverage-info";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, MarginBalanceArgContext.Default.MarginBalanceArgDto, MarginBalanceResponseContext.Default.MarginBalanceResponse, cancellationToken);
+	}
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
-		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 调整保证金
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/position/margin-balance";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	// 获取杠杆倍数
+	public async Task<LeverageInfoResponse?> GetAccountLeverage(string productID, string tradeMode, CancellationToken cancellationToken) {
+		var path = "/api/v5/account/leverage-info";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string> {
+				{ nameof(OKEXOrderKeys.instId), productID },
+				{ nameof(OKEXOrderKeys.mgnMode), tradeMode },
+			})
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 逐仓交易设置
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/set-isolated-mode";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, LeverageInfoResponseContext.Default.LeverageInfoResponse, cancellationToken);
+	}
+		
+	// 逐仓交易设置
+	public async Task<DontCareAboutBodyResponse?> SetIsolatedMode(IsolatedModeArgDto isolatedMode, CancellationToken cancellationToken) {
+		var path = "/api/v5/account/set-isolated-mode";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage<IsolatedModeArgDto>() {
+			Content = isolatedMode
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, IsolatedModeArgContext.Default.IsolatedModeArgDto, DontCareAboutBodyResponseContext.Default.DontCareAboutBodyResponse, cancellationToken);
+	}
+	//
 	// // 设置账户模式
 	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
 	// 	var path = "/api/v5/account/set-account-level";
