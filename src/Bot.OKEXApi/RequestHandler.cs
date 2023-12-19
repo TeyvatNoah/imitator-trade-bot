@@ -27,9 +27,7 @@ public sealed class RequestHandler: HttpClientHandler {
 		}
 
 		// 按理这两个互斥, 但简单起见就这样吧
-		if (BeforeSend is not null) {
-			newReq = BeforeSend(req, cancellationToken);
-		}
+		newReq = BeforeSend?.Invoke(req, cancellationToken);
 
 		var resp = await base.SendAsync(newReq ?? req, cancellationToken);
 
@@ -39,9 +37,7 @@ public sealed class RequestHandler: HttpClientHandler {
 		}
 		
 		// 按理这两个互斥, 但简单起见就这样吧
-		if (AfterResponse is not null) {
-			newResp = AfterResponse(resp, cancellationToken);
-		}
+		newResp = AfterResponse?.Invoke(resp, cancellationToken);
 		
 		return newResp ?? resp;
 	}

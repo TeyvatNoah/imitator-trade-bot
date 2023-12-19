@@ -96,8 +96,23 @@ public enum OKEXOrderKeys {
 	totalEq,
 	isoEq,
 	adjEq,
-	ordFroz
-
+	ordFroz,
+	instFamily,
+	quoteCcy,
+	high24h,
+	low24h,
+	open24h,
+	sodUtc0,
+	sodUtc8,
+	ts,
+	fundingRate,
+	nextFundingRate,
+	fundingTime,
+	nextFundingTime,
+	minFundingRate,
+	maxFundingRate,
+	settState,
+	settFundingRate
 }
 
 
@@ -200,4 +215,6 @@ public enum SystemStatusKeys {
 	end,
 	maintType,
 	href,
+	ts,
+	usdCny,
 }

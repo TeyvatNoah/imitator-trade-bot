@@ -16,7 +16,7 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			}
 
 			var utcTimeStr = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffK");
-			var preSignedStr = req.Content is null || req.Content.ToString() == "" ?
+			var preSignedStr = string.IsNullOrEmpty(req.Content?.ToString()) ?
 				$"{utcTimeStr}{req.Method}{req.RequestUri!.PathAndQuery}" :
 				$"{utcTimeStr}{req.Method}{req.RequestUri!.PathAndQuery}{content}";
 
@@ -303,28 +303,24 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		
 		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, IsolatedModeArgContext.Default.IsolatedModeArgDto, DontCareAboutBodyResponseContext.Default.DontCareAboutBodyResponse, cancellationToken);
 	}
-	//
-	// // 设置账户模式
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/account/set-account-level";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	
+	// 设置账户模式
+	public async Task<DontCareAboutBodyResponse?> SetAccountMode(AccountModeArgDto mode, CancellationToken cancellationToken) {
+		var path = "/api/v5/account/set-account-level";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage<AccountModeArgDto>() {
+			Content = mode
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, AccountModeArgDtoContext.Default.AccountModeArgDto, DontCareAboutBodyResponseContext.Default.DontCareAboutBodyResponse, cancellationToken);
+	}
 	// // 下单
 	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
 	// 	var path = "/api/v5/trade/order";
@@ -430,172 +426,140 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
 	// }
 
-	// // TODO
-	// // 获取订单信息
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/order";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	// 获取订单信息
+	public async Task<OKEXOrderListResponse?> GetOrderByID(string productID, string orderID, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/order";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string> {
+				{ nameof(OKEXOrderKeys.instId), productID },
+				{ nameof(OKEXOrderKeys.ordId), orderID },
+			})
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 获取历史订单,七天
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/orders-history";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
+	}
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
-		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 获取指数行情
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/market/index-tickers";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	// 获取历史订单,七天
+	public async Task<OKEXOrderListResponse?> GetFilledOrderList(string tradeType, string orderCategory, string orderState, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/orders-history";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string> {
+				{ nameof(OKEXOrderKeys.instType), tradeType },
+				{ nameof(OKEXOrderKeys.instFamily), orderCategory },
+				// { nameof(OKEXOrderKeys.instId), productID },
+				{ nameof(OKEXOrderKeys.state), orderState },
+			})
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 获取系统时间
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/public/time";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
+	}
+	// 获取指数行情
+	public async Task<OKEXResponse<IndexTickersDto>?> GetIndexTickers(string productID, string unit, CancellationToken cancellationToken) {
+		var path = "/api/v5/market/index-tickers";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string> {
+				{ nameof(OKEXOrderKeys.instId), productID },
+				{ nameof(OKEXOrderKeys.quoteCcy), unit },
+			})
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 获取标记价格
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/public/mark-price";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, IndexTickersResponseContext.Default.OKEXResponseIndexTickersDto, cancellationToken);
+	}
+	// 获取系统时间
+	public async Task<OKEXResponse<SystemTimeDto>?> GetSystemTime(CancellationToken cancellationToken) {
+		var path = "/api/v5/public/time";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage();
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 获取永续当前资金费率
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/public/funding-rate";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, SystemTimeResponseContext.Default.OKEXResponseSystemTimeDto, cancellationToken);
+	}
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
-		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 获取法币汇率
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/market/exchange-rate";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	// 获取标记价格
+	public async Task<OKEXResponse<MarkPriceDto>?> GetMarkPrice(string tradeType, string productID, CancellationToken cancellationToken) {
+		var path = "/api/v5/public/mark-price";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string> {
+				{ nameof(OKEXOrderKeys.instType), tradeType },
+				{ nameof(OKEXOrderKeys.instId), productID },
+			})
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 批量修改订单
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/amend-batch-orders";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, MarkPriceResponseContext.Default.OKEXResponseMarkPriceDto, cancellationToken);
+	}
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+	
+	// 获取永续当前资金费率
+	public async Task<OKEXResponse<FundingRateDto>?> GetFundingRate(string productID, CancellationToken cancellationToken) {
+		var path = "/api/v5/public/funding-rate";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string> {
+				{ nameof(OKEXOrderKeys.instId), productID },
+			})
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, FundingRateResponseContext.Default.OKEXResponseFundingRateDto, cancellationToken);
+	}
+
+	// 获取法币汇率
+	public async Task<OKEXResponse<ExchangeRateDto>?> GetExchangeRate(CancellationToken cancellationToken) {
+		var path = "/api/v5/market/exchange-rate";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
+		
+		var reqMsg = new RequestMessage();
+		
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, ExchangeRateResponseContext.Default.OKEXResponseExchangeRateDto, cancellationToken);
+	}
 }

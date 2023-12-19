@@ -19,6 +19,10 @@ public sealed class OEKXOrderDto {
 	[JsonPropertyName(nameof(OKEXOrderKeys.clOrdId))]
 	public string? UserOrderID { get; set; }
 
+	// 保证金币种
+	[JsonPropertyName(nameof(OKEXOrderKeys.ccy))]
+	public string? Currency { get; set; }
+
 	// 订单标签
 	[JsonPropertyName(nameof(OKEXOrderKeys.tag))]
 	public string? Tag { get; set; }
@@ -31,11 +35,15 @@ public sealed class OEKXOrderDto {
 	[JsonPropertyName(nameof(OKEXOrderKeys.sz))]
 	public string? Size { get; set; }
 
+	// 收益,仅用于成交订单
+	[JsonPropertyName(nameof(OKEXOrderKeys.pnl))]
+	public string? Pnl { get; set; }
+
 	// 订单类型, eg,市价or限价
 	[JsonPropertyName(nameof(OKEXOrderKeys.ordType))]
 	public string? OrderType { get; set; }
 
-	// 交易方向
+	// 订单方向
 	[JsonPropertyName(nameof(OKEXOrderKeys.side))]
 	public string? Side { get; set; }
 
@@ -47,7 +55,7 @@ public sealed class OEKXOrderDto {
 	[JsonPropertyName(nameof(OKEXOrderKeys.tdMode))]
 	public string? TradeMode { get; set; }
 
-	// 我们自定义的订单ID
+	// 部分成交数量
 	[JsonPropertyName(nameof(OKEXOrderKeys.accFillSz))]
 	public string? PartialFillSize { get; set; }
 

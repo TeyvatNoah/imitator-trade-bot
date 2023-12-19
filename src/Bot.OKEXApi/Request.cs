@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
 // 源生成器又不会, 运行时反射又不想用, 只能先搓个这东西凑合用
-public sealed class Request {
+public sealed class Request: IDisposable {
 	public BeforeSendSerializeAsyncHookReturn? BeforeSendSerializeAsyncHookReturn { get; init; }
 	public BeforeSendSerializeAsyncHookNoReturn? BeforeSendSerializeAsyncHookNoReturn { get; init; }
 	public BeforeSendSerializeSyncHookReturn? BeforeSendSerializeSyncHookReturn { get; init; }
@@ -41,13 +41,12 @@ public sealed class Request {
 			return default;
 		}
 
-		var tempUri = new UriBuilder(uri);
-		if (msg.Query is not null) {
+		var tempUri = new UriBuilder(uri) {
 			// 考虑StringBuilder?
 			// 不支持重复key
 			// tempUri.Query = string.Join("&", msg.Query.Select(kv => $"{UrlEncoder.Default.Encode(kv.Key)}={UrlEncoder.Default.Encode(kv.Value)}"));
-			tempUri.Query = msg.Query.ToString();
-		}
+			Query = msg.Query?.ToString() ?? ""
+		};
 
 		using var req = new HttpRequestMessage(method, tempUri.Uri);
 
@@ -56,36 +55,34 @@ public sealed class Request {
 
 		HttpRequestMessage? newReq = null;
 		// 无论是否有body,这几个都是要调用的
-		if (BeforeSendSerializeSyncHookNoReturn is not null) {
-			BeforeSendSerializeSyncHookNoReturn(req, cancelToken);
-		}
+		BeforeSendSerializeSyncHookNoReturn?.Invoke(req, cancelToken);
+		// 考虑到不完全等价还是if算了
 		if (BeforeSendSerializeAsyncHookNoReturn is not null) {
 			await BeforeSendSerializeAsyncHookNoReturn(req, cancelToken);
 		}
-		if (BeforeSendSerializeSyncHookReturn is not null) {
-			newReq = BeforeSendSerializeSyncHookReturn(req, cancelToken);
-		}
+		// BeforeSendSerializeAsyncHookNoReturn?.Invoke(req, cancelToken).GetAwaiter().GetResult();
+		newReq = BeforeSendSerializeSyncHookReturn?.Invoke(req, cancelToken);
 		if (BeforeSendSerializeAsyncHookReturn is not null) {
 			newReq = await BeforeSendSerializeAsyncHookReturn(req, cancelToken);
 		}
+		// newReq = BeforeSendSerializeAsyncHookReturn?.Invoke(req, cancelToken).GetAwaiter().GetResult();
 		
 
 		var nnewReq = newReq ?? req;
 
 		// 这里要么不带body要么不需要序列化但是为了保证一致所以还是执行此hook了
 		// 首先multipart和steram不需要管序列化排除掉,至于ByteArrayContent,这里也没办法序列化
-		if (AfterSendDeserializeSyncHookNoReturn is not null) {
-			AfterSendDeserializeSyncHookNoReturn("", nnewReq, cancelToken);
-		}
+		AfterSendDeserializeSyncHookNoReturn?.Invoke("", nnewReq, cancelToken);
 		if (AfterSendDeserializeAsyncHookNoReturn is not null) {
 			await AfterSendDeserializeAsyncHookNoReturn("", nnewReq, cancelToken);
+			
 		}
-		if (AfterSendDeserializeSyncHookReturn is not null) {
-			nnewReq = AfterSendDeserializeSyncHookReturn("", nnewReq, cancelToken);
+		// AfterSendDeserializeAsyncHookNoReturn?.Invoke("", nnewReq, cancelToken).GetAwaiter().GetResult();
+		nnewReq = AfterSendDeserializeSyncHookReturn?.Invoke("", nnewReq, cancelToken) ?? nnewReq;
+		if (AfterSendDeserializeAsyncHookReturn is not null) {
+			nnewReq = await AfterSendDeserializeAsyncHookReturn("", nnewReq, cancelToken);
 		}
-		if (AfterSendDeserializeSyncHookReturn is not null) {
-			nnewReq = AfterSendDeserializeSyncHookReturn("", nnewReq, cancelToken);
-		}
+		// nnewReq = AfterSendDeserializeAsyncHookReturn?.Invoke("", nnewReq, cancelToken).GetAwaiter().GetResult();
 
 		
 		// 这里要么不带body要么不需要序列化所以不执行此hook了
@@ -113,24 +110,18 @@ public sealed class Request {
 
 			newResp = resp;
 			
-			if (BeforeResponseSerializeSyncHookNoReturn is not null) {
-				BeforeResponseSerializeSyncHookNoReturn(req, resp, cancelToken);
-			}
+			BeforeResponseSerializeSyncHookNoReturn?.Invoke(req, resp, cancelToken);
 			if (BeforeResponseSerializeAsyncHookNoReturn is not null) {
 				await BeforeResponseSerializeAsyncHookNoReturn(req, resp, cancelToken);
 			}
-			if (BeforeResponseSerializeSyncHookReturn is not null) {
-				newResp = BeforeResponseSerializeSyncHookReturn(req, resp, cancelToken);
-			}
+			newResp = BeforeResponseSerializeSyncHookReturn?.Invoke(req, resp, cancelToken) ?? newResp;
 			if (BeforeResponseSerializeAsyncHookReturn is not null) {
 				newResp = await BeforeResponseSerializeAsyncHookReturn(req, resp, cancelToken);
 			}
 			
 			var result = await HttpContentJsonExtensions.ReadFromJsonAsync(newResp.Content, jsonTypeInfo, cancelToken);
 
-			if (AfterResponseDeserializeSyncHookNoReturn is not null) {
-				AfterResponseDeserializeSyncHookNoReturn(result, req, newResp, cancelToken);
-			}
+			AfterResponseDeserializeSyncHookNoReturn?.Invoke(result, req, newResp, cancelToken);
 			if (AfterResponseDeserializeAsyncHookNoReturn is not null) {
 				await AfterResponseDeserializeAsyncHookNoReturn(result, req, newResp, cancelToken);
 			}
@@ -169,13 +160,14 @@ public sealed class Request {
 			return default;
 		}
 
-		var tempUri = new UriBuilder(uri);
-		if (msg.Query is not null) {
+		var tempUri = new UriBuilder(uri) {
+			// if (msg.Query is not null) {
 			// 考虑StringBuilder?
 			// 不支持重复key
 			// tempUri.Query = string.Join("&", msg.Query.Select(kv => $"{UrlEncoder.Default.Encode(kv.Key)}={UrlEncoder.Default.Encode(kv.Value)}"));
-			tempUri.Query = msg.Query.ToString();
-		}
+			Query = msg.Query?.ToString() ?? ""
+		};
+		// }
 
 		using var req = new HttpRequestMessage(method, tempUri.Uri);
 
@@ -184,15 +176,15 @@ public sealed class Request {
 		
 		HttpRequestMessage? newReq = null;
 		// 无论是否有body,这几个都是要调用的
-		if (BeforeSendSerializeSyncHookNoReturn is not null) {
-			BeforeSendSerializeSyncHookNoReturn(req, cancelToken);
-		}
+		// if (BeforeSendSerializeSyncHookNoReturn is not null) {
+		BeforeSendSerializeSyncHookNoReturn?.Invoke(req, cancelToken);
+		// }
 		if (BeforeSendSerializeAsyncHookNoReturn is not null) {
 			await BeforeSendSerializeAsyncHookNoReturn(req, cancelToken);
 		}
-		if (BeforeSendSerializeSyncHookReturn is not null) {
-			newReq = BeforeSendSerializeSyncHookReturn(req, cancelToken);
-		}
+		// if (BeforeSendSerializeSyncHookReturn is not null) {
+		newReq = BeforeSendSerializeSyncHookReturn?.Invoke(req, cancelToken);
+		// }
 		if (BeforeSendSerializeAsyncHookReturn is not null) {
 			newReq = await BeforeSendSerializeAsyncHookReturn(req, cancelToken);
 		}
@@ -211,17 +203,13 @@ public sealed class Request {
 			
 			var contentStr = Encoding.UTF8.GetString(content);
 
-			if (AfterSendDeserializeSyncHookNoReturn is not null) {
-				AfterSendDeserializeSyncHookNoReturn(contentStr, nnewReq, cancelToken);
-			}
+			AfterSendDeserializeSyncHookNoReturn?.Invoke(contentStr, nnewReq, cancelToken);
 			if (AfterSendDeserializeAsyncHookNoReturn is not null) {
 				await AfterSendDeserializeAsyncHookNoReturn(contentStr, nnewReq, cancelToken);
 			}
-			if (AfterSendDeserializeSyncHookReturn is not null) {
-				nnewReq = AfterSendDeserializeSyncHookReturn(contentStr, nnewReq, cancelToken);
-			}
-			if (AfterSendDeserializeSyncHookReturn is not null) {
-				nnewReq = AfterSendDeserializeSyncHookReturn(contentStr, nnewReq, cancelToken);
+			nnewReq = AfterSendDeserializeSyncHookReturn?.Invoke(contentStr, nnewReq, cancelToken) ?? nnewReq;
+			if (AfterSendDeserializeAsyncHookReturn is not null) {
+				nnewReq = await AfterSendDeserializeAsyncHookReturn(contentStr, nnewReq, cancelToken);
 			}
 		}
 		
@@ -232,15 +220,11 @@ public sealed class Request {
 			
 			newResp = resp;
 			
-			if (BeforeResponseSerializeSyncHookNoReturn is not null) {
-				BeforeResponseSerializeSyncHookNoReturn(nnewReq!, resp, cancelToken);
-			}
+			BeforeResponseSerializeSyncHookNoReturn?.Invoke(nnewReq!, resp, cancelToken);
 			if (BeforeResponseSerializeAsyncHookNoReturn is not null) {
 				await BeforeResponseSerializeAsyncHookNoReturn(nnewReq!, resp, cancelToken);
 			}
-			if (BeforeResponseSerializeSyncHookReturn is not null) {
-				newResp = BeforeResponseSerializeSyncHookReturn(nnewReq!, resp, cancelToken);
-			}
+			newResp = BeforeResponseSerializeSyncHookReturn?.Invoke(nnewReq!, resp, cancelToken) ?? newResp;
 			if (BeforeResponseSerializeAsyncHookReturn is not null) {
 				newResp = await BeforeResponseSerializeAsyncHookReturn(nnewReq!, resp, cancelToken);
 			}
@@ -248,9 +232,7 @@ public sealed class Request {
 			
 			var result = await HttpContentJsonExtensions.ReadFromJsonAsync(newResp.Content, resJsonTypeInfo, cancelToken);
 
-			if (AfterResponseDeserializeSyncHookNoReturn is not null) {
-				AfterResponseDeserializeSyncHookNoReturn(result, nnewReq!, newResp, cancelToken);
-			}
+			AfterResponseDeserializeSyncHookNoReturn?.Invoke(result, nnewReq!, newResp, cancelToken);
 			if (AfterResponseDeserializeAsyncHookNoReturn is not null) {
 				await AfterResponseDeserializeAsyncHookNoReturn(result, nnewReq!, newResp, cancelToken);
 			}
@@ -280,6 +262,10 @@ public sealed class Request {
 		
 		// var respContent = await resp.Content.ReadAsStreamAsync();
 		// return await JsonSerializer.DeserializeAsync(respContent, resJsonTypeInfo, cancelToken);
+	}
+	
+	public void Dispose() {
+		_client?.Dispose();
 	}
 	
 }
