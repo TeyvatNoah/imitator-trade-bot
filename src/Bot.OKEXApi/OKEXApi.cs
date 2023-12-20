@@ -321,113 +321,128 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		
 		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, AccountModeArgDtoContext.Default.AccountModeArgDto, DontCareAboutBodyResponseContext.Default.DontCareAboutBodyResponse, cancellationToken);
 	}
-	// // 下单
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/order";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
-		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 撤单
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/cancel-order";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	// 下单
+	public async Task<OKEXResponse<OrderOperationDto>?> newOrder(OKEXOrderArgDto order, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/order";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage<OKEXOrderArgDto>() {
+			Content = order
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 批量撤单
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/cancel-batch-orders";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, OKEXOrderArgContext.Default.OKEXOrderArgDto, OrderOperationResponseContext.Default.OKEXResponseOrderOperationDto, cancellationToken);
+	}
+	
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
-		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
-		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 修改订单
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/amend-order";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+	
+	// 批量下单
+	public async Task<OKEXResponse<OrderOperationDto>?> newBatchOrder(OKEXOrderArgDto[] orders, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/order";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage<OKEXOrderArgDto[]>() {
+			Content = orders
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
-	// // TODO
-	// // 批量修改订单
-	// public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
-	// 	var path = "/api/v5/trade/amend-batch-orders";
-	// 	var uriBuilder = new UriBuilder(BaseAddress) {
-	// 		Path = path
-	// 	};
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg,
+		OKEXBatchOrderArgContext.Default.OKEXOrderArgDtoArray,
+		OrderOperationResponseContext.Default.OKEXResponseOrderOperationDto, cancellationToken);
+	}
+	
 
-	// 	if (cancellationToken.IsCancellationRequested) {
-	// 		return default;
-	// 	}
+	// 撤单
+	public async Task<OKEXResponse<OrderOperationDto>?> CancelOrderByID(CancelOrderArgDto order, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/cancel-order";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
 		
-	// 	var reqMsg = new RequestMessage() {
-	// 		Query = new Dictionary<string, string> {
-	// 			{ nameof(OKEXOrderKeys.instType), tradeType },
-	// 			{ nameof(OKEXOrderKeys.state), orderState },
-	// 		}
-	// 	};
+		var reqMsg = new RequestMessage<CancelOrderArgDto>() {
+			Content = order
+		};
 		
-	// 	return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
-	// }
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg, CancelOrderArgContext.Default.CancelOrderArgDto, OrderOperationResponseContext.Default.OKEXResponseOrderOperationDto, cancellationToken);
+	}
+	//
+	// 批量撤单
+	public async Task<OKEXResponse<OrderOperationDto>?> CancelBatchOrders(CancelOrderArgDto[] orders, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/cancel-batch-orders";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
+		
+		var reqMsg = new RequestMessage<CancelOrderArgDto[]>() {
+			Content = orders
+		};
+		
+		return await _client.FetchWithJsonBody(HttpMethod.Post, uriBuilder.Uri, reqMsg,
+			CancelBatchOrderArgContext.Default.CancelOrderArgDtoArray,
+			OrderOperationResponseContext.Default.OKEXResponseOrderOperationDto, cancellationToken);
+	}
+	//
+	// 修改订单
+	public async Task<OKEXResponse<OrderOperationDto>?> ModifyOrder(ModifiedOrderArgDto order, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/amend-order";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
+		
+		var reqMsg = new RequestMessage<ModifiedOrderArgDto>() {
+			Content = order
+		};
+		
+		return await _client.FetchWithJsonBody(HttpMethod.Get, uriBuilder.Uri, reqMsg,
+			ModifiedOrderArgContext.Default.ModifiedOrderArgDto,
+			OrderOperationResponseContext.Default.OKEXResponseOrderOperationDto, cancellationToken);
+	}
+
+	// 修改订单
+	public async Task<OKEXResponse<OrderOperationDto>?> ModifyBatchOrders(ModifiedOrderArgDto[] orders, CancellationToken cancellationToken) {
+		var path = "/api/v5/trade/amend-order";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		if (cancellationToken.IsCancellationRequested) {
+			return default;
+		}
+		
+		var reqMsg = new RequestMessage<ModifiedOrderArgDto[]>() {
+			Content = orders
+		};
+		
+		return await _client.FetchWithJsonBody(HttpMethod.Get, uriBuilder.Uri, reqMsg,
+			ModifiedBatchOrdersArgContext.Default.ModifiedOrderArgDtoArray,
+			OrderOperationResponseContext.Default.OKEXResponseOrderOperationDto, cancellationToken);
+	}
 
 	// 获取订单信息
-	public async Task<OKEXOrderListResponse?> GetOrderByID(string productID, string orderID, CancellationToken cancellationToken) {
+	public async Task<OKEXOrderListResponse?> GetOrderByID(string productID, string platformOrderID, CancellationToken cancellationToken) {
 		var path = "/api/v5/trade/order";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
@@ -440,7 +455,7 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		var reqMsg = new RequestMessage() {
 			Query = new(new Dictionary<string, string> {
 				{ nameof(OKEXOrderKeys.instId), productID },
-				{ nameof(OKEXOrderKeys.ordId), orderID },
+				{ nameof(OKEXOrderKeys.ordId), platformOrderID },
 			})
 		};
 		

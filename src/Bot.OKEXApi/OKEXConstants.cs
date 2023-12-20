@@ -112,7 +112,13 @@ public enum OKEXOrderKeys {
 	minFundingRate,
 	maxFundingRate,
 	settState,
-	settFundingRate
+	settFundingRate,
+	sCode,
+	sMsg,
+	cxlOnFail,
+	reqId,
+	newSz,
+	newPx,
 }
 
 
@@ -217,4 +223,10 @@ public enum SystemStatusKeys {
 	href,
 	ts,
 	usdCny,
+}
+
+public static class QuickMgnTypeEnum {
+	public static string Manual = "manual";
+	public static string AutoBorrow = "auto_borrow";
+	public static string AutoRepay = "auto_repay";
 }

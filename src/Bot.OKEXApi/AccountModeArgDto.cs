@@ -4,8 +4,9 @@ namespace Bot.OKEXApi;
 
 public sealed class AccountModeArgDto {
 	// 账户模式
+	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.acctLv))]
-	public string? Mode { get; set; }
+	public required string Mode { get; set; }
 	
 }
 

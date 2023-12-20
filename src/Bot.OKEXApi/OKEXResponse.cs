@@ -33,3 +33,12 @@ public partial class FundingRateResponseContext: JsonSerializerContext {}
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(OKEXResponse<ExchangeRateDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class ExchangeRateResponseContext: JsonSerializerContext {}
+
+// [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
+// [JsonSerializable(typeof(OKEXResponse<CancelOrderDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+// public partial class CancelOrderResponseContext: JsonSerializerContext {}
+
+
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
+[JsonSerializable(typeof(OKEXResponse<OrderOperationDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class OrderOperationResponseContext: JsonSerializerContext {}

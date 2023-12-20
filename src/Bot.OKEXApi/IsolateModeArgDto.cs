@@ -4,14 +4,14 @@ namespace Bot.OKEXApi;
 
 public sealed class IsolatedModeArgDto {
 	// 产品ID
+	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.isoMode))]
-	public string? IsolatedMode { get; set; }
+	public required string IsolatedMode { get; set; }
 	
 	// 持仓方向
+	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.type))]
-	public string? Type { get; set; }
-	
-	
+	public required string Type { get; set; }
 }
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 

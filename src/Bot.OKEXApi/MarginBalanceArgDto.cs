@@ -4,20 +4,24 @@ namespace Bot.OKEXApi;
 
 public sealed class MarginBalanceArgDto {
 	// 产品ID
+	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXOrderKeys.instId))]
-	public string? ProductID { get; set; }
+	public required string ProductID { get; set; }
 	
 	// 持仓方向
+	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXOrderKeys.posSide))]
-	public string? PosSide { get; set; }
+	public required string PosSide { get; set; }
 	
 	// 增加或减少
+	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.type))]
-	public string? Type { get; set; }
+	public required string Type { get; set; }
 	
 	// 变更的保证金数量
+	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.amt))]
-	public double? Amount { get; set; }
+	public required double Amount { get; set; }
 	
 	// 币种
 	[JsonPropertyName(nameof(OKEXOrderKeys.ccy))]
