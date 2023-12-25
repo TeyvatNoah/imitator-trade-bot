@@ -6,7 +6,7 @@ using System.Text.Unicode;
 
 using Bot.OKEXApi;
 
-using RestEase;
+// using RestEase;
 
 // var a = new User {
 // 	Age = 24,
@@ -57,8 +57,8 @@ using RestEase;
 // }
 // 
 
-var api = new OKEXApi();
+// var api = new OKEXApi();
 
 
-var resp = await api.GetPendingOrderList("FUTURES", "", "partially_filled");
-Console.WriteLine(resp.Code);
+// var resp = await api.GetPendingOrderList("FUTURES", "", "partially_filled");
+// Console.WriteLine(resp.Code);

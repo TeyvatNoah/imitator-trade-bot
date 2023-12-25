@@ -217,6 +217,8 @@ public sealed class PlatformWatcherWorker(
 		return CurrentAllOrders
 			// 不合并了,没多少
 		.Where(v => LastAllOrders.ContainsKey(v.PlatformOrderID))
+		// TODO 进一步确认判断条件
+		// 可能出现重复提交修改
 		.Where(v => v.OrderModifiedTime != v.OrderCreatedTime)
 		.Where(v => {
 			Order? oldOrder = default;

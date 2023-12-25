@@ -78,7 +78,7 @@ public sealed partial class Configuration {
 
 			_botConfiguration.FollowerAppKey = _config.GetValue<string>(StartupConfiguration.FollowerAppKey)!;
 			_botConfiguration.FollowerSecret = _config.GetValue<string>(StartupConfiguration.FollowerSecret)!;
-			_botConfiguration.FollowerAppKey = _config.GetValue<string>(StartupConfiguration.FollowerPassphrase)!;
+			_botConfiguration.FollowerPassphrase= _config.GetValue<string>(StartupConfiguration.FollowerPassphrase)!;
 			_botConfiguration.PlatformAppKey = _config.GetValue<string>(StartupConfiguration.PlatformAppKey)!;
 			_botConfiguration.PlatformSecret = _config.GetValue<string>(StartupConfiguration.PlatformSecret)!;
 			_botConfiguration.PlatFormPassphrase = _config.GetValue<string>(StartupConfiguration.PlatFormPassphrase)!;
@@ -165,7 +165,7 @@ public sealed partial class Configuration {
 					var t3 = _platformWatcher.GetInstruments(_botConfiguration.ProductID, OKEXTradeType.SWAP);
 
 					// 异常及早退出
-					await Task.WhenAll(t0, t1, t2);
+					await Task.WhenAll(t0, t1, t2, t3);
 
 					var r0 = await t0;
 					var r1 = await t1;
@@ -239,6 +239,17 @@ public sealed partial class Configuration {
 					数量精度: {_botConfiguration.SizePrecision}
 					最小数量: {_botConfiguration.MinSize}
 					""");
+
+				_logger.LogInformation("设置账户模式...");
+				await _follower.SetAccountMode(_botConfiguration.AccountLevel);
+				_logger.LogInformation("设置持仓模式...");
+				await _follower.SetAccountPositionMode(_botConfiguration.PositionMode);
+				_logger.LogInformation("设置逐仓保证金划转模式...");
+				await _follower.SetIsolatedMode(_botConfiguration.IsolatedMode);
+				_logger.LogInformation("设置逐仓杠杆...");
+				await _follower.SetAccountLeverage(_botConfiguration.ProductID, MgnMode.Isolated, _botConfiguration.IsolatedPositionSide, _botConfiguration.IsolatedLeverage);
+				_logger.LogInformation("设置全仓杠杆...");
+				await _follower.SetAccountLeverage(_botConfiguration.ProductID, MgnMode.Cross, null, _botConfiguration.CrossLeverage);
 				} catch (Exception e) {
 					_logger.LogError(e, "检测配置异常");
 				}
