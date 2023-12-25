@@ -28,8 +28,9 @@ public sealed class OEKXOrderDto {
 	public string? Tag { get; set; }
 
 	// 委托价格,单位币
+	[JsonConverter(typeof(EmptyStringConverter))]
 	[JsonPropertyName(nameof(OKEXOrderKeys.px))]
-	public double ConsignmentPrice { get; set; }
+	public double? ConsignmentPrice { get; set; }
 
 	// 委托数量
 	[JsonPropertyName(nameof(OKEXOrderKeys.sz))]

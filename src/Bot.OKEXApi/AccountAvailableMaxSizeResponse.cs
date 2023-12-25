@@ -2,14 +2,13 @@ using System.Text.Json.Serialization;
 
 namespace Bot.OKEXApi;
 
-public sealed class AccountAvailableMaxSizeResponse: IOKEXResponse<AccountAvailableMaxSizeDto[]> {
+public sealed class AccountAvailableMaxSizeResponse: IOKEXResponse<AccountAvailableMaxSizeDto> {
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.code))]
 	public int Code { get; init; }
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.msg))]
 	public string Message { get; init; } = "";
-	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.data))]
 	public AccountAvailableMaxSizeDto[] Data { get; init; } = default!;
 }

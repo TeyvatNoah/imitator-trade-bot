@@ -7,8 +7,8 @@ using Bot.OKEXApi;
 
 // 需要两个OKEXAPI单例(那还能叫单例吗?)
 // 虽然蠢了点,但这样可以work
-public sealed class PlatformUser(string AppKey, string Secret, string Passphrase): OKEXApi(AppKey, Secret, Passphrase) {
-	private OrderMapper Mapper = new();
+public sealed class PlatformUser(string APIKey, string Secret, string Passphrase): OKEXApi(APIKey, Secret, Passphrase) {
+	private readonly OrderMapper Mapper = new();
 	public async Task<AccountConfigurationDto> GetAccountConfiguration() {
 		var resp = await GetAccountConfiguration(new(false));
 		// TODO null异常处理
@@ -28,7 +28,7 @@ public sealed class PlatformUser(string AppKey, string Secret, string Passphrase
 	public async Task<IEnumerable<Order>> GetUnfilledOrders(string tradeType, string productID) {
 		var len = 0;
 		string? lastID = null;
-		IEnumerable<Order> orders = [];
+		List<Order> orders = [];
 
 		do {
 			var resp = await GetPendingOrderList(tradeType, productID, OKEXOrderState.Unfilled, lastID, new(false));
@@ -37,9 +37,9 @@ public sealed class PlatformUser(string AppKey, string Secret, string Passphrase
 				v.PlatformState = PlatformOrderState.Unfilled;
 				v.CustomState = CustomOrderState.New;
 			});
-			orders = orders.Concat(result ?? []);
-			len = orders.Count();
-			lastID = orders.Last().PlatformOrderID;
+			orders.AddRange(result ?? []);
+			len = orders.Count;
+			lastID = orders.LastOrDefault()?.PlatformOrderID;
 		} while (len == 100);
 		
 		return orders;
@@ -48,7 +48,7 @@ public sealed class PlatformUser(string AppKey, string Secret, string Passphrase
 	public async Task<IEnumerable<Order>> GetPartialFilledOrders(string tradeType, string productID) {
 		var len = 0;
 		string? lastID = null;
-		IEnumerable<Order> orders = [];
+		List<Order> orders = [];
 
 		do {
 			var resp = await GetPendingOrderList(tradeType, productID, OKEXOrderState.PartialFilled, lastID, new(false));
@@ -57,9 +57,9 @@ public sealed class PlatformUser(string AppKey, string Secret, string Passphrase
 				v.PlatformState = PlatformOrderState.PartialFilled;
 				v.CustomState = CustomOrderState.New;
 			});
-			orders = orders.Concat(result ?? []);
-			len = orders.Count();
-			lastID = orders.Last().PlatformOrderID;
+			orders.AddRange(result ?? []);
+			len = orders.Count;
+			lastID = orders.LastOrDefault()?.PlatformOrderID;
 		} while (len == 100);
 		
 		return orders;

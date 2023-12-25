@@ -48,7 +48,7 @@ builder.Services.Configure<HostOptions>(config => {
 builder.Services
 	.AddSingleton(
 		OKEXUserInit(
-			StartupConfiguration.PlatformAppKey,
+			StartupConfiguration.PlatformAPIKey,
 			StartupConfiguration.PlatformSecret,
 			StartupConfiguration.PlatFormPassphrase,
 			"平台策略",
@@ -57,7 +57,7 @@ builder.Services
 	)
 	.AddSingleton(
 		OKEXUserInit(
-			StartupConfiguration.FollowerAppKey,
+			StartupConfiguration.FollowerAPIKey,
 			StartupConfiguration.FollowerSecret,
 			StartupConfiguration.FollowerPassphrase,
 			"跟单",
@@ -179,10 +179,10 @@ host.Run();
 // 于是只能再加一个Func在调用处指定类型实例化
 // 但这一切真的值得吗? 你是不是有毛病? 为了两个重复的地方搞这么个东西真的有可读性?
 // just for fun
-static Func<IServiceProvider, T> OKEXUserInit<T>(string appKey, string secret, string passphrase, string userType, Func<string, string, string, T> factory) where T: OKEXApi {
+static Func<IServiceProvider, T> OKEXUserInit<T>(string apiKey, string secret, string passphrase, string userType, Func<string, string, string, T> factory) where T: OKEXApi {
 	return sp => {
 		var config = sp.GetService<IConfiguration>();
-		var _appKey = config!.GetValue<string>(appKey);
+		var _appKey = config!.GetValue<string>(apiKey);
 		var _secret = config!.GetValue<string>(secret);
 		var _passphrase = config!.GetValue<string>(passphrase);
 		

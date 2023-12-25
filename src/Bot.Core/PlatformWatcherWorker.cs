@@ -70,39 +70,47 @@ public sealed class PlatformWatcherWorker(
 				.Concat(FilterNewFilledOrders())
 				.ForEach(v => v.CustomState = CustomOrderState.New);
 				
-				await _diffChannel.Writer.WriteAsync(new() {
-					Orders = newOrders,
-					State = CustomOrderState.New
-				});
+				if (newOrders.Count() != 0) {
+					await _diffChannel.Writer.WriteAsync(new() {
+						Orders = newOrders,
+						State = CustomOrderState.New
+					});
+				}
 
 				// 获取新修改订单
 				var modifiedOrders = FilterNewModifiedOrders().ForEach(v => v.CustomState = CustomOrderState.Modified);
 
-				await _diffChannel.Writer.WriteAsync(new() {
-					Orders = modifiedOrders,
-					State = CustomOrderState.Modified
-				});
+				if (modifiedOrders.Count() != 0) {
+					await _diffChannel.Writer.WriteAsync(new() {
+						Orders = modifiedOrders,
+						State = CustomOrderState.Modified
+					});
+				}
 				
 				// 获取新撤单
 				var canceledOrders = FilterNewCanceledOrders().ForEach(v => v.CustomState = CustomOrderState.Canceled);
 				
-				await _diffChannel.Writer.WriteAsync(new() {
-					Orders = canceledOrders,
-					State = CustomOrderState.Canceled
-				});
+				if (canceledOrders.Count() != 0) {
+					await _diffChannel.Writer.WriteAsync(new() {
+						Orders = canceledOrders,
+						State = CustomOrderState.Canceled
+					});
 
-				// 也通知分析worker
-				await _finishChannel.Writer.WriteAsync(new() {
-					Orders = canceledOrders,
-					State = PlatformOrderState.Canceled
-				});
+					// 也通知分析worker
+					await _finishChannel.Writer.WriteAsync(new() {
+						Orders = canceledOrders,
+						State = PlatformOrderState.Canceled
+					});
+				}
 				
 				var newFinishedOrders = GetFilledOrdersIncrements();
 
-				await _finishChannel.Writer.WriteAsync(new() {
-					Orders = newFinishedOrders,
-					State = PlatformOrderState.Filled
-				});
+				if (newFinishedOrders.Count() != 0) {
+					await _finishChannel.Writer.WriteAsync(new() {
+						Orders = newFinishedOrders,
+						State = PlatformOrderState.Filled
+					});
+				}
 				
 				CommitAllOrders();
 			} catch (Exception e) {
@@ -169,8 +177,8 @@ public sealed class PlatformWatcherWorker(
 		
 		CurrentUnfilledOrders.AddRange(newUnfilledOrders);
 		CurrentPartialFilledOrders.AddRange(newPartialOrders);
-		CurrentFilledOrders.AddRange(newFilledOrders);
 		CurrentCanceledOrders.AddRange(newCancelOrders);
+		CurrentFilledOrders.AddRange(newFilledOrders);
 
 		CurrentAllOrders.AddRange(CurrentUnfilledOrders);
 		CurrentAllOrders.AddRange(CurrentPartialFilledOrders);
@@ -208,7 +216,11 @@ public sealed class PlatformWatcherWorker(
 	// 必是新增订单
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private IEnumerable<Order> FilterNewFilledOrders() {
-		return CurrentFilledOrders.Where(v => !LastUnfilledOrders.ContainsKey(v.PlatformOrderID) && !LastPartialFilledOrders.ContainsKey(v.PlatformOrderID));
+		if (LastUnfilledOrders.Count == 0) {
+			return [];
+		} else {
+			return CurrentFilledOrders.Where(v => !LastUnfilledOrders.ContainsKey(v.PlatformOrderID) && !LastPartialFilledOrders.ContainsKey(v.PlatformOrderID));
+		}
 	}
 
 	// 获取已修改订单

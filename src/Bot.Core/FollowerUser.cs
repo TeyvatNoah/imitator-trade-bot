@@ -6,7 +6,7 @@ using Bot.OKEXApi;
 
 // 需要两个OKEXAPI单例(那还能叫单例吗?)
 // 虽然蠢了点,但这样可以work
-public sealed class FollowerUser(string AppKey, string Secret, string Passphrase): OKEXApi(AppKey, Secret, Passphrase) {
+public sealed class FollowerUser(string APIKey, string Secret, string Passphrase): OKEXApi(APIKey, Secret, Passphrase) {
 	public readonly OrderMapper Mapper = new();
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

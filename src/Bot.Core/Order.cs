@@ -17,7 +17,7 @@ public sealed class Order {
 	public double ConsignmentPrice { get; set; }
 
 	// 未修正委托价格,单位币
-	public double OriginalPrice { get; set; }
+	public double? OriginalPrice { get; set; }
 
 	// 委托数量
 	public double Size { get; set; }

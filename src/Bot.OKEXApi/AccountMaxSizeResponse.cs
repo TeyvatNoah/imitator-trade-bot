@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bot.OKEXApi;
 
-public sealed class AccountMaxSizeResponse: IOKEXResponse<AccountMaxSizeDto[]> {
+public sealed class AccountMaxSizeResponse: IOKEXResponse<AccountMaxSizeDto> {
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.code))]
 	public int Code { get; init; }

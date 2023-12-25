@@ -1,11 +1,11 @@
 namespace Bot.Core;
 
 public sealed partial class Configuration {
-	private string FollowerAppKey { get; set; }
+	private string FollowerAPIKey { get; set; }
 	private string FollowerSecret { get; set; }
 	private string FollowerPassphrase { get; set; }
 
-	private string PlatformAppKey { get; set; }
+	private string PlatformAPIKey { get; set; }
 	private string PlatformSecret { get; set; }
 	private string PlatFormPassphrase { get; set; }
 	public string AccountLevel { get; private set; }

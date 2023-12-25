@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bot.OKEXApi;
 
-public sealed class MarginBalanceResponse: IOKEXResponse<MarginBalanceDto[]> {
+public sealed class MarginBalanceResponse: IOKEXResponse<MarginBalanceDto> {
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.code))]
 	public int Code { get; init; }

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bot.OKEXApi;
 
-public sealed class HistoryPositionsResponse: IOKEXResponse<HistoryPositionsDto[]> {
+public sealed class HistoryPositionsResponse: IOKEXResponse<HistoryPositionsDto> {
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.code))]
 	public int Code { get; init; }

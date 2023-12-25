@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bot.OKEXApi;
 
-public sealed class PositionsResponse: IOKEXResponse<PositionsDto[]> {
+public sealed class PositionsResponse: IOKEXResponse<PositionsDto> {
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.code))]
 	public int Code { get; init; }

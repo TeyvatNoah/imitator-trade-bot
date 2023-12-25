@@ -76,10 +76,10 @@ public sealed partial class Configuration {
 		public async Task StartingAsync(CancellationToken cancellationToken) {
 			_logger.LogInformation("正在设置交易账户...");
 
-			_botConfiguration.FollowerAppKey = _config.GetValue<string>(StartupConfiguration.FollowerAppKey)!;
+			_botConfiguration.FollowerAPIKey = _config.GetValue<string>(StartupConfiguration.FollowerAPIKey)!;
 			_botConfiguration.FollowerSecret = _config.GetValue<string>(StartupConfiguration.FollowerSecret)!;
 			_botConfiguration.FollowerPassphrase= _config.GetValue<string>(StartupConfiguration.FollowerPassphrase)!;
-			_botConfiguration.PlatformAppKey = _config.GetValue<string>(StartupConfiguration.PlatformAppKey)!;
+			_botConfiguration.PlatformAPIKey = _config.GetValue<string>(StartupConfiguration.PlatformAPIKey)!;
 			_botConfiguration.PlatformSecret = _config.GetValue<string>(StartupConfiguration.PlatformSecret)!;
 			_botConfiguration.PlatFormPassphrase = _config.GetValue<string>(StartupConfiguration.PlatFormPassphrase)!;
 			_botConfiguration.ProductID = _config.GetValue<string>(StartupConfiguration.Product)!;
@@ -184,6 +184,12 @@ public sealed partial class Configuration {
 						_botConfiguration.PositionMode = r0.PositionMode;
 						_botConfiguration.AutoLoan = r0.AutoLoan;
 						_botConfiguration.IsolatedMode = r0.CTIsoMode;
+						_logger.LogInformation("设置账户模式...");
+						await _follower.SetAccountMode(_botConfiguration.AccountLevel);
+						_logger.LogInformation("设置持仓模式...");
+						await _follower.SetAccountPositionMode(_botConfiguration.PositionMode);
+						_logger.LogInformation("设置逐仓保证金划转模式...");
+						await _follower.SetIsolatedMode(_botConfiguration.IsolatedMode);
 					}
 
 					if (
@@ -195,6 +201,8 @@ public sealed partial class Configuration {
 						_botConfiguration.IsolatedMgnMode = r1.TradeMode!;
 						_botConfiguration.IsolatedLeverage = r1.Leverage;
 						_botConfiguration.IsolatedPositionSide = r1.PosSide!;
+						_logger.LogInformation("设置逐仓杠杆...");
+						await _follower.SetAccountLeverage(_botConfiguration.ProductID, MgnMode.Isolated, _botConfiguration.IsolatedPositionSide, _botConfiguration.IsolatedLeverage);
 					}
 
 					if (
@@ -206,6 +214,8 @@ public sealed partial class Configuration {
 						_botConfiguration.CrossMgnMode = r2.TradeMode!;
 						_botConfiguration.CrossLeverage = r2.Leverage;
 						_botConfiguration.CrossPositionSide = r2.PosSide!;
+						_logger.LogInformation("设置全仓杠杆...");
+						await _follower.SetAccountLeverage(_botConfiguration.ProductID, MgnMode.Cross, null, _botConfiguration.CrossLeverage);
 					}
 
 					if (
@@ -240,16 +250,6 @@ public sealed partial class Configuration {
 					最小数量: {_botConfiguration.MinSize}
 					""");
 
-				_logger.LogInformation("设置账户模式...");
-				await _follower.SetAccountMode(_botConfiguration.AccountLevel);
-				_logger.LogInformation("设置持仓模式...");
-				await _follower.SetAccountPositionMode(_botConfiguration.PositionMode);
-				_logger.LogInformation("设置逐仓保证金划转模式...");
-				await _follower.SetIsolatedMode(_botConfiguration.IsolatedMode);
-				_logger.LogInformation("设置逐仓杠杆...");
-				await _follower.SetAccountLeverage(_botConfiguration.ProductID, MgnMode.Isolated, _botConfiguration.IsolatedPositionSide, _botConfiguration.IsolatedLeverage);
-				_logger.LogInformation("设置全仓杠杆...");
-				await _follower.SetAccountLeverage(_botConfiguration.ProductID, MgnMode.Cross, null, _botConfiguration.CrossLeverage);
 				} catch (Exception e) {
 					_logger.LogError(e, "检测配置异常");
 				}

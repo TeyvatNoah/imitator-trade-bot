@@ -12,9 +12,8 @@ public interface IOKEXResponse {
 }
 
 public interface IOKEXResponse<T>: IOKEXResponse {
-	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXResponseKeys.data))]
-	T Data { get; init; }
+	T[] Data { get; init; }
 }
 
 [JsonSerializable(typeof(IOKEXResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]

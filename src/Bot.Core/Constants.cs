@@ -1,10 +1,10 @@
 namespace Bot.Core;
 
 public static class StartupConfiguration {
-	public const string PlatformAppKey = "PLATFORM_APPKEY";
+	public const string PlatformAPIKey = "PLATFORM_APIKEY";
 	public const string PlatformSecret = "PLATFORM_SECRET";
 	public const string PlatFormPassphrase = "PLATFORM_PASSPHRASE";
-	public const string FollowerAppKey = "FOLLOWER_APPKEY";
+	public const string FollowerAPIKey = "FOLLOWER_APIKEY";
 	public const string FollowerSecret = "FOLLOWER_SECRET";
 	public const string FollowerPassphrase = "FOLLOWER_PASSPHRASE";
 	public const string LogDirectory = "./logs";
