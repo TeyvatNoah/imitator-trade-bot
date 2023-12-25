@@ -37,9 +37,6 @@ public sealed class Request: IDisposable {
 	}
 
 	public async Task<T?> FetchWithGenericBody<T>(HttpMethod method, Uri uri, RequestMessage msg, JsonTypeInfo<T> jsonTypeInfo, CancellationToken cancelToken) {
-		if (cancelToken.IsCancellationRequested) {
-			return default;
-		}
 
 		var tempUri = new UriBuilder(uri) {
 			// 考虑StringBuilder?
@@ -50,7 +47,7 @@ public sealed class Request: IDisposable {
 
 		using var req = new HttpRequestMessage(method, tempUri.Uri);
 
-		msg.Headers?.ForEach((_, v) => req.Headers.Add(v.Key, v.Value));
+		msg.Headers?.ForEach(v => req.Headers.Add(v.Key, v.Value));
 		
 
 		HttpRequestMessage? newReq = null;
@@ -156,9 +153,6 @@ public sealed class Request: IDisposable {
 	}
 
 	public async Task<RS?> FetchWithJsonBody<RQ, RS>(HttpMethod method, Uri uri, RequestMessage<RQ> msg, JsonTypeInfo<RQ> reqJsonTypeInfo, JsonTypeInfo<RS> resJsonTypeInfo, CancellationToken cancelToken) {
-		if (cancelToken.IsCancellationRequested) {
-			return default;
-		}
 
 		var tempUri = new UriBuilder(uri) {
 			// if (msg.Query is not null) {
@@ -171,7 +165,7 @@ public sealed class Request: IDisposable {
 
 		using var req = new HttpRequestMessage(method, tempUri.Uri);
 
-		msg.Headers?.ForEach((_, v) => req.Headers.Add(v.Key, v.Value));
+		msg.Headers?.ForEach((KeyValuePair<string, IEnumerable<string>> v) => req.Headers.Add(v.Key, v.Value));
 
 		
 		HttpRequestMessage? newReq = null;
@@ -270,17 +264,25 @@ public sealed class Request: IDisposable {
 	
 }
 
-public sealed class RequestMessage<T> {
+public sealed class RequestMessage<T>: IDisposable {
 	public HttpHeaders? Headers { get; init; }
 	public T? Content { get; init; }
 	// public ICollection<KeyValuePair<string, string>>? Query { get; init; }
 	public QueryString? Query { get; init; }
+	
+	public void Dispose() {
+		Query?.Dispose();
+	}
 }
 
-public sealed class RequestMessage {
+public sealed class RequestMessage: IDisposable {
 	public HttpHeaders? Headers { get; init; }
 	// public ICollection<KeyValuePair<string, string>>? Query { get; init; }
 	public QueryString? Query { get; init; }
+
+	public void Dispose() {
+		Query?.Dispose();
+	}
 }
 
 

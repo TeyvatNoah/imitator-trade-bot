@@ -3,5 +3,9 @@ source https://nuget.cdn.azure.cn/v3/index.json
 storage: none
 nuget Dapper.AOT
 nuget Microsoft.Extensions.Hosting 8.0.0
+nuget Microsoft.Extensions.Hosting.Systemd
+nuget Microsoft.Extensions.Hosting.WindowsServices
 nuget Riok.Mapperly
 nuget System.CommandLine 2.0.0-beta4.22272.1 beta4
+nuget ZLogger
+nuget ZString

@@ -1,21 +1,21 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
+using Cysharp.Text;
 
 // 非线程安全
 // 需要支持remove吗? 不需要吧
-public sealed class QueryString {
-	private readonly StringBuilder _query;
+public sealed class QueryString: IDisposable {
+	private const string _and = "&";
+	private const string _eq = "=";
+	private Utf16ValueStringBuilder _query = ZString.CreateStringBuilder();
 	
-	public QueryString() {
-		_query = new();
-	}
+	public QueryString() {}
 	
 	public QueryString(string q) {
-		_query = new(q);
+		_query.Append(q);
 	}
 	
-	public QueryString(ICollection<KeyValuePair<string, string>> dict): this() {
+	public QueryString(ICollection<KeyValuePair<string, string?>> dict): this() {
 		foreach (var (key, value) in dict) {
 			Add(key, value);
 		}
@@ -31,7 +31,7 @@ public sealed class QueryString {
 			return this;
 		}
 
-		_query.Append($"{key}={value}&");
+		_query.Append(_query.Length != 0 ? ZString.Concat(_and, key, _eq, value) : ZString.Concat(key, _eq, value));
 		return this;
 	}
 	
@@ -40,7 +40,7 @@ public sealed class QueryString {
 			return this;
 		}
 
-		_query.Append($"{key}={value}&");
+		_query.Append(_query.Length != 0 ? ZString.Concat(_and, key, _eq, value.ToString()) : ZString.Concat(key, _eq, value.ToString()));
 		return this;
 	}
 
@@ -49,7 +49,7 @@ public sealed class QueryString {
 			return this;
 		}
 
-		_query.Append($"{key}={cb(value)}&");
+		_query.Append(_query.Length != 0 ? ZString.Concat(_and, key, _eq, cb(value)) : ZString.Concat(key, _eq, cb(value)));
 		return this;
 	}
 
@@ -63,7 +63,7 @@ public sealed class QueryString {
 				continue;
 			}
 
-			_query.Append($"{key}={arr[i]}&");
+			_query.Append(_query.Length != 0 ? ZString.Concat(_and, key, _eq, arr[i]) : ZString.Concat(key, _eq, arr[i]));
 		}
 		return this;
 	}
@@ -77,12 +77,12 @@ public sealed class QueryString {
 			if (arr[i] is null) {
 				continue;
 			}
-			_query.Append($"{key}={arr[i]}&");
+			_query.Append(_query.Length != 0 ? ZString.Concat(_and, key, _eq, arr[i].ToString()) : ZString.Concat(key, _eq, arr[i]).ToString());
 		}
 		return this;
 	}
 
-	public QueryString Add<T>(string key, T[] arr, Func<T, string> cb) where T: INumber<T> {
+	public QueryString Add<T>(string key, T[] arr, Func<T, string> cb) {
 		if (string.IsNullOrWhiteSpace(key)) {
 			return this;
 		}
@@ -92,13 +92,17 @@ public sealed class QueryString {
 				continue;
 			}
 
-			_query.Append($"{key}={cb(arr[i])}&");
+			_query.Append(_query.Length != 0 ? ZString.Concat(_and, key, _eq, cb(arr[i])) : ZString.Concat(key, _eq, cb(arr[i])));
 		}
 		return this;
 	}
 	
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public override string ToString() {
-		return _query.Remove(_query.Length - 1, 1).ToString();
+		return _query.ToString();
+	}
+	
+	public void Dispose() {
+		_query.Dispose();
 	}
 }

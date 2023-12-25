@@ -5,10 +5,34 @@
  "version": "0.2.0",
  "configurations": [
       {
-          "name": ".NET Core Launch (console)",
+          "name": "Core",
           "type": "coreclr",
           "request": "launch",
-          "preLaunchTask": "build",
+          "preLaunchTask": "buildCore",
+          // If you have changed target frameworks, make sure to update the program path.
+          "program": "${workspaceFolder}/src/Bot.Core/bin/Debug/net8.0/Bot.Core.dll",
+          "args": [],
+          "cwd": "${workspaceFolder}",
+          // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+          "console": "internalConsole",
+          "stopAtEntry": false,
+					"env": {
+						"BOT_FOLLOWER_SECRET": "",
+						"BOT_FOLLOWER_APPKEY": "",
+						"BOT_FOLLOWER_PASSPHRASE": "",
+						"BOT_PLATFORM_SECRET": "",
+						"BOT_PLATFORM_APPKEY": "",
+						"BOT_PLATFORM_PASSPHRASE": "",
+						"HTTP_PROXY": "http://127.0.0.1:2333",
+						"HTTPS_PROXY": "http://127.0.0.1:2333",
+						"ALL_PROXY": "http://127.0.0.1:2333",
+					}
+      },
+      {
+          "name": "OKEXAPI",
+          "type": "coreclr",
+          "request": "launch",
+          "preLaunchTask": "buildOKEXAPI",
           // If you have changed target frameworks, make sure to update the program path.
           "program": "${workspaceFolder}/src/Bot.OKEXApi/bin/Debug/net8.0/Bot.OKEXApi.dll",
           "args": [],

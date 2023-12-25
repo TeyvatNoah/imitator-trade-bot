@@ -19,6 +19,9 @@
     <AssemblyName>$(Exefile)</AssemblyName>
     <!-- 输出目录 -->
     <!-- <OutputPath>Test\</OutputPath> -->
+    <!-- 预处理器符号定义 -->
+    <DefineConstants Condition="$(RID.Contains('win'))">WINDOWS</DefineConstants>
+    <DefineConstants Condition="$(RID.Contains('linux'))">LINUX</DefineConstants>
     <!-- 编译器选项 -->
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -35,7 +38,7 @@
     <!-- 编译器选项 -->
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <!-- 预处理器符号定义 -->
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
     <!-- 生成调试信息 -->
     <!-- 调试符号 -->
     <DebugSymbols>true</DebugSymbols>
@@ -64,7 +67,7 @@
     <!-- 编译器选项 -->
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <!-- 预处理器符号定义 -->
-    <DefineConstants>RELEASE</DefineConstants>
+    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
     <!-- 生成调试信息 -->
     <!-- 调试符号 -->
     <DebugSymbols>false</DebugSymbols>
@@ -85,7 +88,7 @@
     <PublishAot>true</PublishAot>
     <OptimizationPreference>speed</OptimizationPreference>
     <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
-		<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
     <!-- <IsAotCompatible>true</IsAotCompatible> -->
     <!-- JIT & PGO -->
     <!-- <TieredPGO>true</TieredPGO>
@@ -120,5 +123,8 @@
     <Message Text="$(RID)" />
     <Message Text="$(Configuration)" />
   </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\Bot.OKEXApi\Bot.OKEXApi.csproj" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

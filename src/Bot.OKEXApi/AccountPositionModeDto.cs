@@ -10,5 +10,5 @@ public sealed class AccountPositionModeDto {
 }
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
-[JsonSerializable(typeof(AccountPositionModeDto), GenerationMode = JsonSourceGenerationMode.Serialization)]
+[JsonSerializable(typeof(AccountPositionModeDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class AccountPositionModeContext: JsonSerializerContext {}

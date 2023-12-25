@@ -5,15 +5,11 @@ using System.Text;
 namespace Bot.OKEXApi;
 
 
-public sealed class OKEXApi(string apiKey, string secret, string passphrase)
-{
+public class OKEXApi(string apiKey, string secret, string passphrase): IDisposable {
 	public const string BaseAddress = "https://www.okx.com";
 
 	private readonly Request _client = new() {
 		AfterSendDeserializeSyncHookNoReturn = (content, req, cancellationToken) => {
-			if (cancellationToken.IsCancellationRequested) {
-				return;
-			}
 
 			var utcTimeStr = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffK");
 			var preSignedStr = string.IsNullOrEmpty(req.Content?.ToString()) ?
@@ -37,7 +33,10 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 		},
 		AfterResponseDeserializeSyncHookNoReturn = (content, req, res, cancellationToken) => {
 			// TODO 如果接口是起始配置接口则需要抛出异常
-			Console.WriteLine((content as IOKEXResponse)?.Code);
+			var resp = content as IOKEXResponse;
+			if (resp?.Code != 0) {
+				throw new HttpRequestException(resp?.Message);
+			}
 		}
 	};
 	// new(new HttpClient(new RequestHandler() {
@@ -56,24 +55,22 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 	
 
 	// 获取未完成订单列表
-	public async Task<OKEXOrderListResponse?> GetPendingOrderList(string tradeType, string orderState, CancellationToken cancellationToken) {
+	public async Task<OKEXResponse<OEKXOrderDto>?> GetPendingOrderList(string tradeType, string productID, string orderState, string? orderID, CancellationToken cancellationToken) {
 		var path = "/api/v5/trade/orders-pending";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
-		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
 				{ nameof(OKEXOrderKeys.state), orderState },
+				{ nameof(OKEXOrderKeys.instId), productID },
+				{ "after", orderID },
 			})
 		};
 		
-		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderResponseContext.Default.OKEXResponseOEKXOrderDto, cancellationToken);
 	}
 
 
@@ -84,11 +81,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage();
+		using var reqMsg = new RequestMessage();
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, SystemStatusResponseContext.Default.SystemStatusResponse, cancellationToken);
 	}
@@ -100,12 +94,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
 			})
 		};
@@ -120,12 +111,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
 				{ nameof(OKEXOrderKeys.state), MgnMode },
 			})
@@ -141,12 +129,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.ccy), currency },
 			})
 		};
@@ -155,19 +140,16 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 	}
 	
 	// 查看账户配置
-	public async Task<AccountConfigurationResponse?> GetAccountConfiguration(CancellationToken cancellationToken) {
+	public async Task<OKEXResponse<AccountConfigurationDto>?> GetAccountConfiguration(CancellationToken cancellationToken) {
 		var path = "/api/v5/account/config";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage();
+		using var reqMsg = new RequestMessage();
 		
-		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, AccountConfigurationResponseContext.Default.AccountConfigurationResponse, cancellationToken);
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, AccountConfigurationResponseContext.Default.OKEXResponseAccountConfigurationDto, cancellationToken);
 	}
 	// 设置持仓模式
 	public async Task<DontCareAboutBodyResponse?> SetAccountPositionMode(AccountPositionModeDto positionMode, CancellationToken cancellationToken) {
@@ -176,11 +158,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<AccountPositionModeDto>() {
+		using var reqMsg = new RequestMessage<AccountPositionModeDto>() {
 			Content = positionMode
 		};
 		
@@ -193,11 +172,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<AccountLeverageDto>() {
+		using var reqMsg = new RequestMessage<AccountLeverageDto>() {
 			Content = leverage
 		};
 		
@@ -211,11 +187,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
+		using var reqMsg = new RequestMessage() {
 			Query = new()
 		};
 		reqMsg.Query
@@ -233,11 +206,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
+		using var reqMsg = new RequestMessage() {
 			Query = new()
 		};
 		reqMsg.Query
@@ -253,11 +223,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<MarginBalanceArgDto>() {
+		using var reqMsg = new RequestMessage<MarginBalanceArgDto>() {
 			Content = marginBalance
 		};
 
@@ -266,24 +233,21 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 	}
 
 	// 获取杠杆倍数
-	public async Task<LeverageInfoResponse?> GetAccountLeverage(string productID, string tradeMode, CancellationToken cancellationToken) {
+	public async Task<OKEXResponse<LeverageInfoDto>?> GetAccountLeverage(string productID, string tradeMode, CancellationToken cancellationToken) {
 		var path = "/api/v5/account/leverage-info";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instId), productID },
 				{ nameof(OKEXOrderKeys.mgnMode), tradeMode },
 			})
 		};
 		
-		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, LeverageInfoResponseContext.Default.LeverageInfoResponse, cancellationToken);
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, LeverageInfoResponseContext.Default.OKEXResponseLeverageInfoDto, cancellationToken);
 	}
 		
 	// 逐仓交易设置
@@ -293,11 +257,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<IsolatedModeArgDto>() {
+		using var reqMsg = new RequestMessage<IsolatedModeArgDto>() {
 			Content = isolatedMode
 		};
 		
@@ -311,11 +272,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<AccountModeArgDto>() {
+		using var reqMsg = new RequestMessage<AccountModeArgDto>() {
 			Content = mode
 		};
 		
@@ -323,17 +281,14 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 	}
 
 	// 下单
-	public async Task<OKEXResponse<OrderOperationDto>?> newOrder(OKEXOrderArgDto order, CancellationToken cancellationToken) {
+	public async Task<OKEXResponse<OrderOperationDto>?> NewOrder(OKEXOrderArgDto order, CancellationToken cancellationToken) {
 		var path = "/api/v5/trade/order";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<OKEXOrderArgDto>() {
+		using var reqMsg = new RequestMessage<OKEXOrderArgDto>() {
 			Content = order
 		};
 		
@@ -343,17 +298,14 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 
 	
 	// 批量下单
-	public async Task<OKEXResponse<OrderOperationDto>?> newBatchOrder(OKEXOrderArgDto[] orders, CancellationToken cancellationToken) {
+	public async Task<OKEXResponse<OrderOperationDto>?> NewBatchOrder(OKEXOrderArgDto[] orders, CancellationToken cancellationToken) {
 		var path = "/api/v5/trade/order";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<OKEXOrderArgDto[]>() {
+		using var reqMsg = new RequestMessage<OKEXOrderArgDto[]>() {
 			Content = orders
 		};
 		
@@ -370,11 +322,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<CancelOrderArgDto>() {
+		using var reqMsg = new RequestMessage<CancelOrderArgDto>() {
 			Content = order
 		};
 		
@@ -388,11 +337,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<CancelOrderArgDto[]>() {
+		using var reqMsg = new RequestMessage<CancelOrderArgDto[]>() {
 			Content = orders
 		};
 		
@@ -408,11 +354,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<ModifiedOrderArgDto>() {
+		using var reqMsg = new RequestMessage<ModifiedOrderArgDto>() {
 			Content = order
 		};
 		
@@ -428,11 +371,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage<ModifiedOrderArgDto[]>() {
+		using var reqMsg = new RequestMessage<ModifiedOrderArgDto[]>() {
 			Content = orders
 		};
 		
@@ -442,47 +382,41 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 	}
 
 	// 获取订单信息
-	public async Task<OKEXOrderListResponse?> GetOrderByID(string productID, string platformOrderID, CancellationToken cancellationToken) {
+	public async Task<OKEXResponse<OEKXOrderDto>?> GetOrderByID(string productID, string platformOrderID, CancellationToken cancellationToken) {
 		var path = "/api/v5/trade/order";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instId), productID },
 				{ nameof(OKEXOrderKeys.ordId), platformOrderID },
 			})
 		};
 		
-		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderResponseContext.Default.OKEXResponseOEKXOrderDto, cancellationToken);
 	}
 
 	// 获取历史订单,七天
-	public async Task<OKEXOrderListResponse?> GetFilledOrderList(string tradeType, string orderCategory, string orderState, CancellationToken cancellationToken) {
+	public async Task<OKEXResponse<OEKXOrderDto>?> GetHistoryOrderList(string tradeType, string productID, string orderState, CancellationToken cancellationToken) {
 		var path = "/api/v5/trade/orders-history";
 		var uriBuilder = new UriBuilder(BaseAddress) {
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
-				{ nameof(OKEXOrderKeys.instFamily), orderCategory },
+				{ nameof(OKEXOrderKeys.instId), productID },
 				// { nameof(OKEXOrderKeys.instId), productID },
 				{ nameof(OKEXOrderKeys.state), orderState },
 			})
 		};
 		
-		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderListResponseContext.Default.OKEXOrderListResponse, cancellationToken);
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, OKEXOrderResponseContext.Default.OKEXResponseOEKXOrderDto, cancellationToken);
 	}
 	// 获取指数行情
 	public async Task<OKEXResponse<IndexTickersDto>?> GetIndexTickers(string productID, string unit, CancellationToken cancellationToken) {
@@ -491,12 +425,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instId), productID },
 				{ nameof(OKEXOrderKeys.quoteCcy), unit },
 			})
@@ -511,11 +442,8 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage();
+		using var reqMsg = new RequestMessage();
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, SystemTimeResponseContext.Default.OKEXResponseSystemTimeDto, cancellationToken);
 	}
@@ -527,12 +455,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instType), tradeType },
 				{ nameof(OKEXOrderKeys.instId), productID },
 			})
@@ -549,12 +474,9 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage() {
-			Query = new(new Dictionary<string, string> {
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
 				{ nameof(OKEXOrderKeys.instId), productID },
 			})
 		};
@@ -569,12 +491,32 @@ public sealed class OKEXApi(string apiKey, string secret, string passphrase)
 			Path = path
 		};
 
-		if (cancellationToken.IsCancellationRequested) {
-			return default;
-		}
 		
-		var reqMsg = new RequestMessage();
+		using var reqMsg = new RequestMessage();
 		
 		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, ExchangeRateResponseContext.Default.OKEXResponseExchangeRateDto, cancellationToken);
 	}
+
+	public void Dispose() {
+		_client.Dispose();
+	}
+
+	// 获取公共数据
+	public async Task<OKEXResponse<InstrumentsDto>?> GetInstruments(string tradeType, string productID, CancellationToken cancellationToken) {
+		var path = "/api/v5/public/instruments";
+		var uriBuilder = new UriBuilder(BaseAddress) {
+			Path = path
+		};
+
+		
+		using var reqMsg = new RequestMessage() {
+			Query = new(new Dictionary<string, string?> {
+				{ nameof(OKEXOrderKeys.instId), productID },
+				{ nameof(OKEXOrderKeys.instType), tradeType },
+			})
+		};
+		
+		return await _client.FetchWithGenericBody(HttpMethod.Get, uriBuilder.Uri, reqMsg, InstrumentsResponseContext.Default.OKEXResponseInstrumentsDto, cancellationToken);
+	}
+
 }

@@ -13,15 +13,15 @@ public sealed class AccountConfigurationDto {
 
 	// 账户层级
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.acctLv))]
-	public string? AccountLevel { get; set; }
+	public string AccountLevel { get; set; } = "";
 
 	// 持仓方式
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.posMode))]
-	public string? PositionMode { get; set; }
+	public string PositionMode { get; set; } = "";
 
 	// 是否自动借币
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.autoLoan))]
-	public bool? AutoLoan { get; set; }
+	public bool AutoLoan { get; set; } = false;
 
 	// 币本位or美元本位
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.greeksType))]
@@ -37,7 +37,7 @@ public sealed class AccountConfigurationDto {
 
 	// 逐仓保证金划转模式
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.ctIsoMode))]
-	public string? CTIsoMode { get; set; }
+	public string CTIsoMode { get; set; } = "";
 
 	// 币币杠杆的逐仓保证金划转模式
 	[JsonPropertyName(nameof(OKEXAccountConfigurationKeys.mgnIsoMode))]

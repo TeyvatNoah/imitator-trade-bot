@@ -26,5 +26,5 @@ public sealed class AccountLeverageDto {
 }
 
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
-[JsonSerializable(typeof(AccountLeverageDto), GenerationMode = JsonSourceGenerationMode.Serialization)]
+[JsonSerializable(typeof(AccountLeverageDto), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class AccountLeverageContext: JsonSerializerContext {}

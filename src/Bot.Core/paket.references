@@ -1,3 +1,7 @@
 Microsoft.Extensions.Hosting
 System.CommandLine
 Dapper.AOT
+ZLogger
+Microsoft.Extensions.Hosting.WindowsServices
+Microsoft.Extensions.Hosting.Systemd
+Riok.Mapperly

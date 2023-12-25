@@ -13,7 +13,7 @@ public sealed class OEKXOrderDto {
 
 	// 平台内部订单ID
 	[JsonPropertyName(nameof(OKEXOrderKeys.ordId))]
-	public string? PlatformOrderID { get; set; }
+	public string PlatformOrderID { get; set; } = default!;
 
 	// 我们自定义的订单ID
 	[JsonPropertyName(nameof(OKEXOrderKeys.clOrdId))]
@@ -29,11 +29,11 @@ public sealed class OEKXOrderDto {
 
 	// 委托价格,单位币
 	[JsonPropertyName(nameof(OKEXOrderKeys.px))]
-	public string? ConsignmentPrice { get; set; }
+	public double ConsignmentPrice { get; set; }
 
 	// 委托数量
 	[JsonPropertyName(nameof(OKEXOrderKeys.sz))]
-	public string? Size { get; set; }
+	public double Size { get; set; }
 
 	// 收益,仅用于成交订单
 	[JsonPropertyName(nameof(OKEXOrderKeys.pnl))]
@@ -45,7 +45,7 @@ public sealed class OEKXOrderDto {
 
 	// 订单方向
 	[JsonPropertyName(nameof(OKEXOrderKeys.side))]
-	public string? Side { get; set; }
+	public string Side { get; set; } = default!;
 
 	// 持仓方向
 	[JsonPropertyName(nameof(OKEXOrderKeys.posSide))]
@@ -85,7 +85,7 @@ public sealed class OEKXOrderDto {
 
 	// 杠杆倍数
 	[JsonPropertyName(nameof(OKEXOrderKeys.lever))]
-	public string? Leverage { get; set; }
+	public float Leverage { get; set; }
 
 	// 手续费币种
 	[JsonPropertyName(nameof(OKEXOrderKeys.feeCcy))]

@@ -1,15 +1,18 @@
+using System.Collections;
+
 public static class IEnumerableExtensions {
-	public static void Foreach<T>(this IEnumerable<T> ien, Action<int> cb) {
-		var i = 0;
+	public static IEnumerable<T> ForEach<T>(this IEnumerable<T> ien, Action<T> cb) {
 		foreach (var item in ien) {
-			cb(i++);
+			cb(item);
 		}
+		return ien;
 	}
 
-	public static void ForEach<T>(this IEnumerable<T> ien, Action<int, T> cb) {
+	public static IEnumerable<T> ForEach<T>(this IEnumerable<T> ien, Action<T, int> cb) {
 		var i = 0;
 		foreach (var item in ien) {
-			cb(i, item);
+			cb(item, i++);
 		}
+		return ien;
 	}
 }

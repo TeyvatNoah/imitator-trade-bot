@@ -16,7 +16,7 @@ public sealed class ModifiedOrderArgDto {
 
 	// 平台内部订单ID
 	[JsonPropertyName(nameof(OKEXOrderKeys.ordId))]
-	public string? PlatformOrderID { get; set; }
+	public string PlatformOrderID { get; set; } = default!;
 
 	// 自定义修改事件
 	[JsonPropertyName(nameof(OKEXOrderKeys.reqId))]
@@ -25,7 +25,7 @@ public sealed class ModifiedOrderArgDto {
 	// 委托数量
 	[JsonRequired]
 	[JsonPropertyName(nameof(OKEXOrderKeys.newSz))]
-	public required string Size { get; set; }
+	public string? Size { get; set; }
 
 	// 委托价格,单位币
 	[JsonPropertyName(nameof(OKEXOrderKeys.newPx))]

@@ -119,6 +119,10 @@ public enum OKEXOrderKeys {
 	reqId,
 	newSz,
 	newPx,
+	tickSz,
+	lotSz,
+	minSz,
+	ctType
 }
 
 
@@ -164,7 +168,7 @@ public enum OKEXAccountConfigurationKeys {
 // 	OPTION
 // }
 
-public sealed class OKEXOrderType {
+public sealed class OKEXTradeType {
 	// 币币
 	public const string SPOT = "SPOT";
 	// 币币杠杆
@@ -229,4 +233,32 @@ public static class QuickMgnTypeEnum {
 	public static string Manual = "manual";
 	public static string AutoBorrow = "auto_borrow";
 	public static string AutoRepay = "auto_repay";
+}
+
+public static class AccountMode {
+	public const string Simple = "1";
+	public const string SingleCurrency = "2";
+	public const string CrossCurrency = "3";
+	public const string Compose = "4";
+}
+
+public static class PositionMode {
+	public const string LongShort = "long_short_mode";
+	public const string NET = "net_mode";
+}
+
+
+public static class IsolatedMode {
+	public const string Automatic = "automatic";
+	public const string Autonomy = "autonomy";
+}
+
+public static class TradeType {
+	public const string MARGIN = "MARGIN";
+	public const string CONTRACTS = "CONTRACTS";
+}
+
+public static class MgnMode {
+	public const string Isolated = "isolated";
+	public const string Cross = "cross";
 }

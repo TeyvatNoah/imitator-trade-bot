@@ -17,7 +17,7 @@ public sealed class LeverageInfoDto {
 	
 	// 杠杆倍数
 	[JsonPropertyName(nameof(OKEXOrderKeys.lever))]
-	public string? Leverage { get; set; }
+	public float Leverage { get; set; } = 0;
 	
 }
 

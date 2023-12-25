@@ -5,7 +5,7 @@ namespace Bot.OKEXApi;
 public sealed class OrderOperationDto {
 	// 订单ID
 	[JsonPropertyName(nameof(OKEXOrderKeys.ordId))]
-	public string? PlatformOrderID { get; set; }
+	public string PlatformOrderID { get; set; } = default!;
 
 	// 自定义ID
 	[JsonPropertyName(nameof(OKEXOrderKeys.clOrdId))]

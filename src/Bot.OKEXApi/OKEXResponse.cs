@@ -42,3 +42,19 @@ public partial class ExchangeRateResponseContext: JsonSerializerContext {}
 [JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
 [JsonSerializable(typeof(OKEXResponse<OrderOperationDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
 public partial class OrderOperationResponseContext: JsonSerializerContext {}
+
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
+[JsonSerializable(typeof(OKEXResponse<AccountConfigurationDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class AccountConfigurationResponseContext: JsonSerializerContext {}
+
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
+[JsonSerializable(typeof(OKEXResponse<LeverageInfoDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class LeverageInfoResponseContext: JsonSerializerContext {}
+
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
+[JsonSerializable(typeof(OKEXResponse<InstrumentsDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class InstrumentsResponseContext: JsonSerializerContext {}
+
+[JsonSourceGenerationOptions(NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)] 
+[JsonSerializable(typeof(OKEXResponse<OEKXOrderDto>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class OKEXOrderResponseContext: JsonSerializerContext {}
